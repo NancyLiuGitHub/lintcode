@@ -1,0 +1,17 @@
+create trigger update_trigger
+after update
+on members for each row
+begin
+    case when old.name != new.name then 
+        insert into reminders(message, memberId)
+        values (concat('Update',old.name,'TO', new.name),id)
+    case when old.email != new.email then
+        insert into reminders(message, memberId)
+        values (concat('Update',old.email,'TO', new.email),id)
+    case when old.birthDate != new.birthDate then
+        insert into reminders(message, memberId)
+        values (concat('Update',old.birthDate,'TO', new.birthDate),id)
+    end
+end
+
+
