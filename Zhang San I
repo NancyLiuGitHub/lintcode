@@ -20,3 +20,19 @@ Expected
 
 # what causes the diff?
 # only select teachers that have more than 3 consecutive ids
+
+
+create view v_courses_teachers as (
+select country, sum(student_count) student_count
+from (
+    select *, id - row_number() over (partition by country order by id) as r
+    from teachers) cte 
+    join courses c on cte.id = c.teacher_id
+where (country, r) in (select country, r 
+                        from (
+                            select *, id - row_number() over (partition by country order by id) as r
+                            from teachers) t
+                        group by 1,2 
+                        having count(id) >=3)
+group by 1
+order by 1)
