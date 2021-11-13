@@ -1,0 +1,22 @@
+create view v_courses_teachers as (
+SELECT country, sum(student_count)
+from teachers t join courses c on t.id = c.teacher_id
+where country in (select country from teachers group by 1 having count(id) >=3)
+group by 1
+order by 1)
+
+Output Data
+| country | sum(student_count) |
+| :------ | :----------------- |
+| 'JP'    | 4070               |
+| 'USA'   | 5920               |
+
+Expected
+| country | student_count |
+| :------ | :------------ |
+| 'JP'    | 4070          |
+| 'USA'   | 4260          |
+
+
+# what causes the diff?
+# only select teachers that have more than 3 consecutive ids
