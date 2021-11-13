@@ -4,14 +4,44 @@ on members for each row
 begin
     case when old.name != new.name then 
         insert into reminders(message, memberId)
-        values (concat('Update',old.name,'TO', new.name),id)
-    case when old.email != new.email then
+        values (concat('Update name=',old.name,'TO', new.name),id);
+    when old.email != new.email then
         insert into reminders(message, memberId)
-        values (concat('Update',old.email,'TO', new.email),id)
-    case when old.birthDate != new.birthDate then
+        values (concat('Update email=',old.email,'TO', new.email),id);
+    when old.birthDate != new.birthDate then
         insert into reminders(message, memberId)
-        values (concat('Update',old.birthDate,'TO', new.birthDate),id)
-    end
+        values (concat('Update birthDate=',old.birthDate,'TO', new.birthDate),id);
+    end case;
 end
 
+#but the code above can't record all three changes in one person in one row
+#the correct answer is below: set two user defined vars
 
+Answer:
+
+CREATE TRIGGER after_members_update
+	AFTER UPDATE ON members FOR EACH ROW
+BEGIN
+    DECLARE textNew VARCHAR(255);
+    DECLARE textOld VARCHAR(255);
+    SET textOld = 'Update {';
+    SET textNew = ' To {';
+
+	IF new.name != old.name THEN
+		SET textOld = CONCAT(textOld, '[name=', old.name, '] ');
+		SET textNew = CONCAT(textNew, '[name=', new.name, '] ');
+	END IF;
+	IF new.email != old.email THEN
+		SET textOld = CONCAT(textOld, '[email=', old.email, '] ');
+		SET textNew = CONCAT(textNew, '[email=', new.email, '] ');
+	END IF;
+	IF new.birthDate != old.birthDate THEN
+		SET textOld = CONCAT(textOld, '[birthDate=', old.birthDate, '] ');
+		SET textNew = CONCAT(textNew, '[birthDate=', new.birthDate, '] ');
+	END IF;
+	SET textOld = CONCAT(textOld, '}');
+	SET textNew = CONCAT(textNew, '}');
+
+	INSERT INTO reminders(memberId, message)
+		VALUES(old.id, CONCAT(textOld, textNew));
+END
