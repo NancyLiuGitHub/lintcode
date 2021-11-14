@@ -1,0 +1,4 @@
+select height second_height
+from players 
+order by height desc 
+limit 1,1
