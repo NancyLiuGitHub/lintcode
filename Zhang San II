@@ -1,4 +1,14 @@
+alter view v_mydream as 
 select t.name teacher_name, c.name course_name, ifnull(max(student_count),0) student_count
 from teachers t left join courses c on t.id = c.teacher_id
 group by 1,2
+order by 1
+
+#wrong: because it will still show one teacher with multiple courses
+
+ALTER VIEW v_mydream AS 
+select t.name teacher_name, c.name course_name, student_count
+from teachers t left join courses c on t.id = c.teacher_id
+where (teacher_id, student_count) in (select teacher_id, max(student_count) from courses group by 1) 
+    or c.student_count is null #alter: ISNULL(c.student_count)
 order by 1
