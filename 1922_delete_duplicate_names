@@ -2,3 +2,10 @@ select id, name
 from (select *, rank() over (partition by name order by id) r 
         from contacts) t
 where r = 1
+
+#must to use delete
+
+
+delete
+from contacts
+where id not in (select min(id) from contacts group by name)
