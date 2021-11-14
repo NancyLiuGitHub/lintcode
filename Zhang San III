@@ -4,3 +4,16 @@ from courses c join teachers t on c.teacher_id = t.id
 where (country, student_count) in (select country, max(student_count) 
                                     from courses c join teachers t on c.teacher_id = t.id
                                     group by 1))
+                                    
+#correction: a teacher can teach multiple courses. So we need to sum students up per teacher
+
+alter view v_best_teachers as (
+select teacher_id, sum(student_count), country, email
+from courses c join teachers t on c.teacher_id = t.id
+group by 1,3,4
+having (country, sum(student_count)) in (select country, max(cnt) 
+                                        from (select teacher_id, sum(student_count) cnt
+                                            from courses
+                                            group by teacher_id)c join teachers t on c.teacher_id = t.id
+                                        group by 1))
+order by 3
