@@ -1,4 +1,6 @@
-select height second_height
+select distinct height second_height
 from players 
 order by height desc 
 limit 1,1
+
+#must add distinct because there could be two or more people have the highest height
