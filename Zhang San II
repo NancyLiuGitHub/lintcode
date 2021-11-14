@@ -1,0 +1,4 @@
+select t.name teacher_name, c.name course_name, ifnull(max(student_count),0) student_count
+from teachers t left join courses c on t.id = c.teacher_id
+group by 1,2
+order by 1
