@@ -1,0 +1,6 @@
+alter view v_best_teachers as (
+select teacher_id, student_count, country, email
+from courses c join teachers t on c.teacher_id = t.id
+where (country, student_count) in (select country, max(student_count) 
+                                    from courses c join teachers t on c.teacher_id = t.id
+                                    group by 1))
