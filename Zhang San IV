@@ -1,0 +1,39 @@
+official solution
+CREATE PROCEDURE youngTeachers()
+BEGIN
+	DECLARE active_age INT;
+	DECLARE all_age INT;
+	DECLARE young_id INT;
+	DECLARE active_id INT;
+
+	CREATE OR REPLACE VIEW v_active_teachers AS
+	SELECT teacher_id FROM courses GROUP BY teacher_id HAVING COUNT(*) > 1; 
+
+	SET active_age = (
+		SELECT AVG(age) 
+		FROM teachers 
+		WHERE id IN (SELECT teacher_id FROM v_active_teachers)
+	);
+	SET all_age = (SELECT AVG(age) FROM teachers);
+
+	WHILE active_age > all_age DO
+		SET young_id = (
+			SELECT id FROM teachers 
+			WHERE id NOT IN (SELECT teacher_id FROM v_active_teachers) 
+			ORDER BY age, name LIMIT 1
+		);
+		SET active_id = (
+			SELECT id FROM teachers 
+			WHERE id IN (SELECT teacher_id FROM v_active_teachers) 
+			ORDER BY age DESC, name LIMIT 1
+		);
+		UPDATE courses SET teacher_id = young_id WHERE teacher_id = active_id;
+		SET active_age = (
+			SELECT AVG(age) 
+			FROM teachers 
+			WHERE id IN (SELECT teacher_id FROM v_active_teachers)
+		);
+		SET all_age = (SELECT AVG(age) FROM teachers);
+	END WHILE;
+	DROP VIEW v_active_teachers;
+END;
