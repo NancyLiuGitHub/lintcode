@@ -17,3 +17,19 @@ having (country, sum(student_count)) in (select country, max(cnt)
                                             group by teacher_id)c join teachers t on c.teacher_id = t.id
                                         group by 1))
 order by 3
+
+
+other solution using window function and group by
+create or replace view v_best_teachers as
+select teacher_id,student_count,country,email from 
+(select cs1.teacher_id,
+  sum(cs1.student_count) student_count,
+  ts1.country,
+  ts1.email,
+  rank() over(partition by ts1.country order by sum(cs1.student_count) desc) rnk 
+  from teachers ts1
+  join courses cs1 on ts1.id=cs1.teacher_id
+  group by cs1.teacher_id,ts1.country
+) btc
+where rnk=1
+order by btc.country
