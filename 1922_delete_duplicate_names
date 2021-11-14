@@ -9,3 +9,10 @@ where r = 1
 delete
 from contacts
 where id not in (select min(id) from contacts group by name)
+
+#correction: 这里需要对select出来的语句再进行一次select，通过中间表来隔开，否则会报错
+#reason: 不能先select出同一表中的某些值，再update这个表.将select出的结果再通过中间表select一遍，可以规避这个错误
+
+delete
+from contacts
+where id not in (select * from (select min(id) from contacts group by name)t)
