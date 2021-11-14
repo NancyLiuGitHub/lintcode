@@ -1,0 +1,4 @@
+select id, name
+from (select *, rank() over (partition by name order by id) r 
+        from contacts) t
+where r = 1
