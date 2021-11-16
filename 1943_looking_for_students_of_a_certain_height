@@ -4,3 +4,27 @@ group by height
 having count(*) = 1
 order by height desc
 limit 1
+
+test case failed
+| height |
+| :----- |
+| 178    |
+| 178    |
+| 173    |
+| 173    |
+
+Expected output
+| height |
+| :----- |
+| None   |
+
+Mine output
+| height |
+| :----- |
+
+#correct solution
+select max(height) as height
+from student_heights
+where height in (
+    select height from student_heights group by height having count(height) = 1
+)
