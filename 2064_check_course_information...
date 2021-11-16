@@ -1,3 +1,5 @@
+https://www.lintcode.com/problem/2064/
+
 select *
 from courses 
 where student_count > all(select sum(student_count)
@@ -6,3 +8,5 @@ where teacher_id in (select id from teachers where name = 'Western Venom')
 group by id)
 
 #change any->all
+
+
