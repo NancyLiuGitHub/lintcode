@@ -1,0 +1,6 @@
+select height
+from student_heights
+group by height
+having count(*) = 1
+order by height desc
+limit 1
