@@ -3,3 +3,18 @@ from exam
 group by 1
 order by count(case when is_pass = 0 then 1 else 0 end) desc
 limit 1
+
+
+#it is missing data if more than one student has the same highest number
+#should use sum instead of count, count will still count 1 when value is 0.
+
+#to make it right
+select student_id
+from exams
+group by 1
+having sum(case when is_pass = 0 then 1 else 0 end) = (
+select max(cnt)
+from (
+select student_id, sum(case when is_pass = 0 then 1 else 0 end) cnt
+from exams
+group by 1)t)
