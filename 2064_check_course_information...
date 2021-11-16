@@ -1,0 +1,6 @@
+select *
+from courses 
+where student_count > any(select sum(student_count)
+from courses
+where teacher_id in (select id from teachers where name = 'Western Venom')
+group by id)
