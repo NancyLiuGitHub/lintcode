@@ -1,0 +1,6 @@
+select *
+from courses
+where student_count > any (
+    select student_count from courses where teacher_id = (
+        select id from teachers where name = 'Eastern Heretic')
+        )
