@@ -18,3 +18,28 @@ from (
 select student_id, sum(case when is_pass = 0 then 1 else 0 end) cnt
 from exams
 group by 1)t)
+
+#still not pass the tests
+#test case failed
+| id | student_id |     date     | is_pass |
+| :- | :--------- | :----------- | :------ |
+| 1  | 1          | '2020-11-10' | 10      |
+
+expected output
+| student_id |
+| :--------- |
+
+Mine returned the value
+
+#correct answer is to use where
+select student_id
+from exams
+where is_pass = 0
+group by 1
+having count(is_pass) = (
+select max(cnt)
+from (
+select student_id, count(is_pass) cnt
+from exams
+where is_pass = 0
+group by 1)t)
