@@ -4,3 +4,8 @@ where student_count > any (
     select student_count from courses where teacher_id = (
         select id from teachers where name = 'Eastern Heretic')
         )
+
+#more data than expected because the where condition doesn't constrain courses taught by Eastern Heretic
+
+# to make it right
+add: "and teacher_id != (select id from teachers where name = 'Eastern Heretic')" in the where condition
